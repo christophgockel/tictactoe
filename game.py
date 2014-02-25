@@ -1,3 +1,10 @@
+class GameState(object):
+    ongoing  = 0
+    tie      = 1
+    winner_x = 2
+    winner_y = 3
+
+
 class Rules(object):
     def enough_players(self, players):
         if len(players) == 2:
@@ -7,6 +14,12 @@ class Rules(object):
 
     def finished(self, board):
         return board.is_full()
+
+    def game_state(self, board):
+        if not board.is_full():
+            return GameState.ongoing
+        else:
+            return GameState.tie
 
 
 class Game(object):

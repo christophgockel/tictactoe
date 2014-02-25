@@ -50,3 +50,15 @@ class TestRules(unittest.TestCase):
     def test_game_is_not_finished_until_all_fields_are_filled(self):
         board = make_board('oxo xooox')
         self.assertFalse(Rules().finished(board))
+
+    def test_unfinished_game_is_in_state_ongoing(self):
+        board = make_board('xoxoxox  ')
+        rules = Rules()
+
+        self.assertEquals(GameState.ongoing, rules.game_state(board))
+
+    def test_finished_game_with_no_winner_is_in_state_tie(self):
+        board = make_board('xoxoxoxox')
+        rules = Rules()
+
+        self.assertEquals(GameState.tie, rules.game_state(board))

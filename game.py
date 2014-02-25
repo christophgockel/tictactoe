@@ -5,6 +5,10 @@ class Rules(object):
         else:
             return False
 
+    def finished(self, board):
+        return board.is_full()
+
+
 class Game(object):
     def __init__(self, rules = Rules()):
         self.players = []
@@ -12,7 +16,8 @@ class Game(object):
 
     def run(self):
         if self.rules.enough_players(self.players):
-            pass
+            while not self.rules.finished():
+                pass
         else:
             raise TooFewPlayers()
     
@@ -21,6 +26,7 @@ class Game(object):
 
     def state(self):
         return board.contents()
+
 
 class TooFewPlayers(Exception):
     pass

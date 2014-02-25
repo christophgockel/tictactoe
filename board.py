@@ -12,3 +12,44 @@ class Board(object):
     def __getitem__(self, key):
         x, y = key
         return self._grid[x][y]
+
+    def row(self, index):
+        return self._grid[index]
+
+    def column(self, index):
+        column = []
+
+        for row in self._grid:
+            column.append(row[index])
+
+        return column
+
+    def diagonal(self, index):
+        if index == 0:
+            return [ row[i] for i, row in enumerate(self._grid) ]
+        else:
+            return [ row[-i-1] for i, row in enumerate(self._grid) ]
+
+    def is_full(self):
+        for row in self._grid:
+            if None in row:
+                return False
+
+        return True
+
+
+def make_board(board_state):
+    def row_maker(string, n):
+        while string:
+            yield string[:n]
+            string = string[n:]
+
+    board = Board()
+
+    for row, content in enumerate(row_maker(board_state, 3)):
+        for column, symbol in enumerate(content):
+            if symbol == ' ':
+                symbol = None
+            board[row, column] = symbol
+
+    return board

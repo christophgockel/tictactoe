@@ -52,13 +52,25 @@ class TestRules(unittest.TestCase):
         self.assertFalse(Rules().finished(board))
 
     def test_unfinished_game_is_in_state_ongoing(self):
-        board = make_board('xoxoxox  ')
-        rules = Rules()
-
-        self.assertEquals(GameState.ongoing, rules.game_state(board))
+        self.assertEquals(GameState.ongoing, Rules().game_state(make_board('xoxoxox  ')))
 
     def test_finished_game_with_no_winner_is_in_state_tie(self):
-        board = make_board('xoxoxoxox')
-        rules = Rules()
+        self.assertEquals(GameState.tie, Rules().game_state(make_board('xoxoxoxox')))
 
-        self.assertEquals(GameState.tie, rules.game_state(board))
+    def test_finished_game_with_x_as_winner_is_in_state_winner_x(self):
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xoxxoxxxo')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xxooxxoxo')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xoxxoxoox')))
+
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xxxoooooo')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('oooxxxooo')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('ooooooxxx')))
+
+    def test_finished_game_with_o_as_winner_is_in_state_winner_o(self):
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oxooxooox')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('xooxoxoox')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('xxooxoxoo')))
+
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oooxoxoxo')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oxooooxox')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oxoxoxooo')))

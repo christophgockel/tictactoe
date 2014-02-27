@@ -2,10 +2,10 @@ from board import Board
 
 
 class GameState(object):
-    ongoing  = 0
-    tie      = 1
-    winner_x = 2
-    winner_o = 3
+    ongoing  = 'ongoing'
+    tie      = 'tie'
+    winner_x = 'winner x'
+    winner_o = 'winner o'
 
 
 class Rules(object):
@@ -87,7 +87,6 @@ class Game(object):
 
     def switch_players(self):
         self.current_player, self.other_player = self.other_player, self.current_player
-
 
 
 class TooFewPlayers(Exception):

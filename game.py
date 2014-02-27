@@ -56,10 +56,10 @@ class Rules(object):
 
 
 class Game(object):
-    def __init__(self):
+    def __init__(self, board=Board()):
         self.players = []
         self.rules = Rules()
-        self.board = Board()
+        self.board = board
         self.current_player = None
         self.other_player = None
 

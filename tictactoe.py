@@ -15,10 +15,25 @@ def user_input(player_symbol):
        except ValueError:
            print 'Not a valid move. Please try again.'
 
+def board_printer(board):
+    index = 0
+    for row in range(board.row_count()):
+        row_content = ''
+
+        for column in range(board.column_count()):
+            symbol = board[row, column]
+            if symbol is None:
+                symbol = index
+            row_content += '{0} '.format(symbol)
+            index += 1
+
+        print row_content
+
 player_x = Player('x', user_input)
 player_o = Player('o', user_input)
 
-game = Game()
+board = Board(callback=board_printer)
+game = Game(board=board)
 game.add_player(player_x)
 game.add_player(player_o)
 

@@ -1,5 +1,5 @@
 import unittest
-import mock
+from mock import Mock
 
 from board import *
 
@@ -35,6 +35,32 @@ class TestBoard(unittest.TestCase):
 
         self.assertFalse(unfinished_board.is_full())
         self.assertTrue(finished_board.is_full())
+
+    def test_passes_itself_to_callback_when_value_gets_set(self):
+        update_callback = Mock()
+        board = Board(callback=update_callback)
+
+        board[1, 1] = 'x'
+
+        update_callback.assert_called_with(board)
+
+    def test_rows_can_be_iterated(self):
+        board = Board(rows=5)
+        count = 0
+
+        for row in board.rows():
+            count += 1
+
+        self.assertEqual(5, count)
+
+    def test_columns_can_be_iterated(self):
+        board = Board(columns=7)
+        count = 0
+
+        for column in board.columns():
+            count += 1
+
+        self.assertEqual(7, count)
 
 
 class TestBoardMaker(unittest.TestCase):

@@ -1,13 +1,17 @@
 class Board(object):
-    def __init__(self, rows=3, columns=3):
+    def __init__(self, rows=3, columns=3, callback=None):
         self._grid = self._initialize_grid(rows, columns)
+        self.callback = callback
 
     def _initialize_grid(self, rows, columns):
-        return [[None for y in range(rows)] for x in range(columns)]
+        return [[None for y in range(columns)] for x in range(rows)]
 
     def __setitem__(self, key, value):
         x, y = key
         self._grid[x][y] = value
+
+        if self.callback:
+            self.callback(self)
 
     def __getitem__(self, key):
         x, y = key
@@ -36,6 +40,20 @@ class Board(object):
                 return False
 
         return True
+
+    def rows(self):
+        for i in range(self.row_count()):
+            yield self.row(i)
+
+    def row_count(self):
+        return len(self._grid)
+
+    def columns(self):
+        for i in range(self.column_count()):
+            yield self.column(i)
+
+    def column_count(self):
+        return len(self._grid[0])
 
 
 def make_board(board_state):

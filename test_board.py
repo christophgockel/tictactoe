@@ -62,6 +62,29 @@ class TestBoard(unittest.TestCase):
 
         self.assertEqual(7, count)
 
+    def test_translates_single_key_values_to_proper_indexes(self):
+        board = Board()
+
+        board[0] = 'o'
+        board[1] = 'x'
+        board[2] = 'o'
+        board[3] = 'x'
+        board[4] = 'o'
+        board[5] = 'x'
+        board[6] = 'o'
+        board[7] = 'x'
+        board[8] = 'o'
+
+        self.assertEqual(board[0], board[0, 0])
+        self.assertEqual(board[1], board[0, 1])
+        self.assertEqual(board[2], board[0, 2])
+        self.assertEqual(board[3], board[1, 0])
+        self.assertEqual(board[4], board[1, 1])
+        self.assertEqual(board[5], board[1, 2])
+        self.assertEqual(board[6], board[2, 0])
+        self.assertEqual(board[7], board[2, 1])
+        self.assertEqual(board[8], board[2, 2])
+
 
 class TestBoardMaker(unittest.TestCase):
     def test_creates_boards_from_string(self):

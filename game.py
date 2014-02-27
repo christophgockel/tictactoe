@@ -72,7 +72,7 @@ class Game(object):
 
             while not self.rules.finished(self.board):
                 move = self.current_player.next_move()
-                self.board[0, move] = self.current_player.symbol
+                self.board[move] = self.current_player.symbol
 
                 self.switch_players()
         else:

@@ -7,14 +7,23 @@ class Board(object):
         return [[None for y in range(columns)] for x in range(rows)]
 
     def __setitem__(self, key, value):
-        x, y = key
+        x, y = self._key_to_coordinates(key)
         self._grid[x][y] = value
 
         if self.callback:
             self.callback(self)
 
+    def _key_to_coordinates(self, key):
+        if isinstance(key, int):
+            row = key / self.row_count()
+            column = key % self.column_count()
+        else:
+            row, column = key
+
+        return row, column
+
     def __getitem__(self, key):
-        x, y = key
+        x, y = self._key_to_coordinates(key)
         return self._grid[x][y]
 
     def row(self, index):

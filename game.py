@@ -56,12 +56,15 @@ class Rules(object):
 
 
 class Game(object):
-    def __init__(self, rules = Rules()):
+    def __init__(self):
         self.players = []
-        self.rules = rules
+        self.rules = Rules()
         self.board = Board()
         self.current_player = None
         self.other_player = None
+
+    def new_rules(self, rules):
+        self.rules = rules
 
     def run(self):
         if self.rules.enough_players(self.players):

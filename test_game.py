@@ -21,7 +21,8 @@ class TestGame(unittest.TestCase):
         rules.finished = Mock(return_value=True)
         rules.enough_players = Mock(return_value=True)
 
-        game = Game(rules)
+        game = Game()
+        game.new_rules(rules)
         game.add_player(self.player_o)
         game.add_player(self.player_x)
 
@@ -34,7 +35,8 @@ class TestGame(unittest.TestCase):
         rules.enough_players = Mock(return_value=True)
         rules.finished = Mock(side_effect=[False, True])
 
-        game = Game(rules)
+        game = Game()
+        game.new_rules(rules)
         game.add_player(self.player_x)
         game.add_player(self.player_o)
         game.run()
@@ -48,7 +50,8 @@ class TestGame(unittest.TestCase):
         self.player_x.next_move = Mock(return_value=0)
         self.player_o.next_move = Mock(return_value=1)
 
-        game = Game(rules)
+        game = Game()
+        game.new_rules(rules)
         game.add_player(self.player_x)
         game.add_player(self.player_o)
 

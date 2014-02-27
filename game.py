@@ -60,11 +60,18 @@ class Game(object):
         self.players = []
         self.rules = rules
         self.board = Board()
+        self.current_player = None
+        self.other_player = None
 
     def run(self):
         if self.rules.enough_players(self.players):
+            self.prepare_players()
+
             while not self.rules.finished(self.board):
-                pass
+                move = self.current_player.next_move()
+                self.board[0, move] = self.current_player.symbol
+
+                self.switch_players()
         else:
             raise TooFewPlayers()
     
@@ -73,6 +80,14 @@ class Game(object):
 
     def state(self):
         return board.contents()
+
+    def prepare_players(self):
+        self.current_player = self.players[0]
+        self.other_player = self.players[1]
+
+    def switch_players(self):
+        self.current_player, self.other_player = self.other_player, self.current_player
+
 
 
 class TooFewPlayers(Exception):

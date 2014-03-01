@@ -60,6 +60,35 @@ class TestGame(unittest.TestCase):
         self.assertEqual(1, self.player_x.next_move.call_count)
         self.assertEqual(1, self.player_o.next_move.call_count)
 
+    def test_full_game_cycle_tie(self):
+        self.player_x.next_move = Mock(side_effect=[0,1,5,6,8])
+        self.player_o.next_move = Mock(side_effect=[2,3,4,7])
+
+        game = Game()
+        game.add_player(self.player_x)
+        game.add_player(self.player_o)
+
+        self.assertEqual(GameState.tie, game.run())
+
+    def test_full_game_cycle_winner_x(self):
+        self.player_x.next_move = Mock(side_effect=[0,4,8])
+        self.player_o.next_move = Mock(side_effect=[1,2])
+
+        game = Game()
+        game.add_player(self.player_x)
+        game.add_player(self.player_o)
+
+        self.assertEqual(GameState.winner_x, game.run())
+
+    def test_full_game_cycle_winner_o(self):
+        self.player_x.next_move = Mock(side_effect=[1,2])
+        self.player_o.next_move = Mock(side_effect=[0,4,8])
+
+        game = Game()
+        game.add_player(self.player_o)
+        game.add_player(self.player_x)
+
+        self.assertEqual(GameState.winner_o, game.run())
 
 class TestRules(unittest.TestCase):
     def test_needs_players(self):
@@ -76,25 +105,35 @@ class TestRules(unittest.TestCase):
         self.assertFalse(Rules().finished(board))
 
     def test_unfinished_game_is_in_state_ongoing(self):
-        self.assertEquals(GameState.ongoing, Rules().game_state(make_board('xoxoxox  ')))
+        self.assertEquals(GameState.ongoing, Rules().game_state(make_board('xoxoxoo  ')))
 
-    def test_finished_game_with_no_winner_is_in_state_tie(self):
-        self.assertEquals(GameState.tie, Rules().game_state(make_board('xoxoxoxox')))
+    def test_full_board_with_no_winner_is_in_state_tie(self):
+        self.assertEquals(GameState.tie, Rules().game_state(make_board('xoxoxooxo')))
 
-    def test_finished_game_with_x_as_winner_is_in_state_winner_x(self):
-        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xoxxoxxxo')))
-        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xxooxxoxo')))
-        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xoxxoxoox')))
+    def test_winning_column_combinations_for_x(self):
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('x  x  x  ')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board(' x  x  x ')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('  x  x  x')))
 
-        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xxxoooooo')))
-        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('oooxxxooo')))
-        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('ooooooxxx')))
+    def test_winning_row_combinations_for_x(self):
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('xxx      ')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('   xxx   ')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('      xxx')))
 
-    def test_finished_game_with_o_as_winner_is_in_state_winner_o(self):
-        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oxooxooox')))
-        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('xooxoxoox')))
-        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('xxooxoxoo')))
+    def test_winning_diagonal_combinations_for_x(self):
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('x   x   x')))
+        self.assertEquals(GameState.winner_x, Rules().game_state(make_board('  x x x  ')))
 
-        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oooxoxoxo')))
-        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oxooooxox')))
-        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('oxoxoxooo')))
+    def test_winning_column_combinations_for_o(self):
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('o  o  o  ')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board(' o  o  o ')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('  o  o  o')))
+
+    def test_winning_row_combinations_for_o(self):
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('ooo      ')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('   ooo   ')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('      ooo')))
+
+    def test_winning_diagonal_combinations_for_o(self):
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('o   o   o')))
+        self.assertEquals(GameState.winner_o, Rules().game_state(make_board('  o o o  ')))

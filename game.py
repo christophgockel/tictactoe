@@ -16,18 +16,17 @@ class Rules(object):
             return False
 
     def finished(self, board):
-        return board.is_full()
+        return self.game_state(board) != GameState.ongoing
 
     def game_state(self, board):
-        if not board.is_full():
-            return GameState.ongoing
+        if self._x_has_three_in_a_row(board):
+            return GameState.winner_x
+        elif self._o_has_three_in_a_row(board):
+            return GameState.winner_o
+        elif board.is_full():
+            return GameState.tie
         else:
-            if self._x_has_three_in_a_row(board):
-                return GameState.winner_x
-            elif self._o_has_three_in_a_row(board):
-                return GameState.winner_o
-            else:
-                return GameState.tie
+            return GameState.ongoing
 
     def _x_has_three_in_a_row(self, board):
         return self._has_three_in_a_row('x', board)
@@ -46,6 +45,11 @@ class Rules(object):
                 if board.row(row)[0] == symbol:
                     return True
 
+        for diagonal in range(2):
+            if self._diagonal_has_same_values(board, diagonal):
+                if board.diagonal(diagonal)[0] == symbol:
+                    return True
+
         return False
 
     def _column_has_same_values(self, board, column):
@@ -54,12 +58,17 @@ class Rules(object):
     def _row_has_same_values(self, board, row):
         return board.row(row)[1:] == board.row(row)[:-1]
 
+    def _diagonal_has_same_values(self, board, diagonal):
+        return board.diagonal(diagonal)[1:] == board.diagonal(diagonal)[:-1]
+
 
 class Game(object):
-    def __init__(self, board=Board()):
+    def __init__(self, board=None):
         self.players = []
         self.rules = Rules()
         self.board = board
+        if self.board is None:
+            self.board = Board()
         self.current_player = None
         self.other_player = None
 
@@ -67,17 +76,19 @@ class Game(object):
         self.rules = rules
 
     def run(self):
-        if self.rules.enough_players(self.players):
+        if self._has_enough_players():
             self.prepare_players()
 
-            while not self.rules.finished(self.board):
+            while self._is_not_finished():
                 move = self.current_player.next_move()
                 self.board[move] = self.current_player.symbol
 
-                self.switch_players()
+                self._switch_players()
+
+            return self._game_state()
         else:
             raise TooFewPlayers()
-    
+
     def add_player(self, player):
         self.players.append(player)
 
@@ -88,8 +99,17 @@ class Game(object):
         self.current_player = self.players[0]
         self.other_player = self.players[1]
 
-    def switch_players(self):
+    def _has_enough_players(self):
+        return self.rules.enough_players(self.players)
+
+    def _is_not_finished(self):
+        return not self.rules.finished(self.board)
+
+    def _switch_players(self):
         self.current_player, self.other_player = self.other_player, self.current_player
+
+    def _game_state(self):
+        return self.rules.game_state(self.board)
 
 
 class TooFewPlayers(Exception):

@@ -81,7 +81,7 @@ class Game(object):
 
             while self._is_not_finished():
                 try:
-                    move = self.current_player.next_move()
+                    move = self.current_player.next_move(self.board)
                     self.board[move] = self.current_player.symbol
 
                     self._switch_players()

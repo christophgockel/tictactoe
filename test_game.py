@@ -8,8 +8,11 @@ from player import *
 
 class TestGame(unittest.TestCase):
     def setUp(self):
-        self.player_x = Player('x', Mock(return_value=0))
-        self.player_o = Player('o', Mock(return_value=1))
+        self.player_x = Player('x')
+        self.player_x.next_move = Mock(return_value=0)
+
+        self.player_o = Player('o')
+        self.player_o.next_move = Mock(return_value=1)
 
     def test_cannot_run_when_not_enough_players(self):
         game = Game()

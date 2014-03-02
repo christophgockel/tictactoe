@@ -3,18 +3,19 @@ from board import make_board
 from player import *
 
 
-def user_input(player_symbol):
-    while True:
-       input = raw_input('Next move for {0}: '.format(player_symbol))
-       try:
-           move = int(input)
+class TerminalInput(object):
+    def next_move(self, player_symbol):
+        while True:
+           input = raw_input('Next move for {0}: '.format(player_symbol))
+           try:
+               move = int(input)
 
-           if move >= 1 and move <= 9:
-               return move - 1
-           else:
-               print 'Move has to be between 1 and 9. Please try again.'
-       except ValueError:
-           print 'Not a valid move. Please try again.'
+               if move >= 1 and move <= 9:
+                   return move - 1
+               else:
+                   print 'Move has to be between 1 and 9. Please try again.'
+           except ValueError:
+               print 'Not a valid move. Please try again.'
 
 def board_printer(board):
     index = 0
@@ -57,8 +58,8 @@ print_introduction()
 
 try:
     while True:
-        player_x = Player('x', user_input)
-        player_o = Player('o', user_input)
+        player_x = Player('x', TerminalInput())
+        player_o = Player('o', TerminalInput())
 
         board = Board(callback=board_printer)
         game = Game(board=board)

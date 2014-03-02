@@ -7,6 +7,9 @@ class Board(object):
         return [[None for y in range(columns)] for x in range(rows)]
 
     def __setitem__(self, key, value):
+        if self[key]:
+            raise UnallowedMove
+
         x, y = self._key_to_coordinates(key)
         self._grid[x][y] = value
 
@@ -63,6 +66,10 @@ class Board(object):
 
     def column_count(self):
         return len(self._grid[0])
+
+
+class UnallowedMove(Exception):
+    pass
 
 
 def make_board(board_state):

@@ -1,4 +1,4 @@
-from board import Board
+from board import Board, UnallowedMove
 
 
 class GameState(object):
@@ -80,10 +80,13 @@ class Game(object):
             self.prepare_players()
 
             while self._is_not_finished():
-                move = self.current_player.next_move()
-                self.board[move] = self.current_player.symbol
+                try:
+                    move = self.current_player.next_move()
+                    self.board[move] = self.current_player.symbol
 
-                self._switch_players()
+                    self._switch_players()
+                except UnallowedMove:
+                    pass
 
             return self._game_state()
         else:

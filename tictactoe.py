@@ -45,10 +45,11 @@ def print_outcome(outcome):
 
 def player_is_done():
     print 'Play another round?'
-    input = raw_input('If not, please enter "no", everything other means "yes": ')
+    input = raw_input('If not, please enter "no", everything else means "yes": ')
 
     if input.lower() == 'no':
         return True
+
     return False
 
 

@@ -90,6 +90,24 @@ class TestGame(unittest.TestCase):
 
         self.assertEqual(GameState.winner_o, game.run())
 
+    def test_players_cannot_place_symbols_on_already_occupied_cells(self):
+        rules = Rules()
+        rules.enough_players = Mock(return_value=True)
+        rules.finished = Mock(side_effect=[False, False, False, True])
+
+        self.player_x.next_move = Mock(side_effect=[1])
+        self.player_o.next_move = Mock(side_effect=[1,0])
+
+        game = Game()
+        game.new_rules(rules)
+        game.add_player(self.player_x)
+        game.add_player(self.player_o)
+
+        game.run()
+
+        self.assertEqual(2, self.player_o.next_move.call_count)
+
+
 class TestRules(unittest.TestCase):
     def test_needs_players(self):
         self.assertFalse(Rules().enough_players([]))

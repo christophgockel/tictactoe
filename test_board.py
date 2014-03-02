@@ -85,6 +85,16 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(board[7], board[2, 1])
         self.assertEqual(board[8], board[2, 2])
 
+    def test_placed_values_cannot_be_overwritten(self):
+        board = Board()
+        board[0, 0] = 'x'
+
+        try:
+            board[0, 0] = 'o'
+            self.fail('Expected exception was not thrown')
+        except UnallowedMove:
+            pass
+
 
 class TestBoardMaker(unittest.TestCase):
     def test_creates_boards_from_string(self):

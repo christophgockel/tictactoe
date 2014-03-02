@@ -1,7 +1,6 @@
 class Board(object):
-    def __init__(self, rows=3, columns=3, callback=None):
+    def __init__(self, rows=3, columns=3):
         self._grid = self._initialize_grid(rows, columns)
-        self.callback = callback
 
     def _initialize_grid(self, rows, columns):
         return [[None for y in range(columns)] for x in range(rows)]
@@ -12,9 +11,6 @@ class Board(object):
 
         x, y = self._key_to_coordinates(key)
         self._grid[x][y] = value
-
-        if self.callback:
-            self.callback(self)
 
     def _key_to_coordinates(self, key):
         if isinstance(key, int):

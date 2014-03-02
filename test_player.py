@@ -25,3 +25,12 @@ class TestPlayer(unittest.TestCase):
 
         self.assertEqual(2, player.next_move(board))
         player_input.next_move.assert_called_with('x', board)
+
+    def test_revised_next_move_asks_input_object_for_actual_value(self):
+        board = Mock()
+        player_input = Mock()
+        player = Player('x', player_input)
+
+        player.revised_next_move(board)
+
+        player_input.revised_next_move.assert_called_with('x', board)

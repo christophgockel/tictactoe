@@ -4,7 +4,7 @@ from player import *
 
 
 class TerminalInput(object):
-    def next_move(self, player_symbol):
+    def next_move(self, player_symbol, board):
         while True:
            input = raw_input('Next move for {0}: '.format(player_symbol))
            try:
@@ -17,14 +17,18 @@ class TerminalInput(object):
            except ValueError:
                print 'Not a valid move. Please try again.'
 
-def board_printer(board):
-    index = 0
-    for row in range(board.row_count()):
-        row_content = ' | '.join([' ' if symbol is None else symbol for symbol in board.row(row)])
-        print row_content
+class TerminalDisplay(object):
+    def show_board_state(self, board):
+        index = 0
+        for row in range(board.row_count()):
+            row_content = ' | '.join([' ' if symbol is None else symbol for symbol in board.row(row)])
+            print row_content
 
-        if row < board.row_count() - 1:
-            print '-' * len(row_content)
+            if row < board.row_count() - 1:
+                print '-' * len(row_content)
+
+    def show_illegal_move_warning(self):
+        print 'Error: Move not allowed. Please provide another coordinate.'
 
 def print_introduction():
     print 'Tic Tac Toe'
@@ -32,7 +36,7 @@ def print_introduction():
     print_board_coordinates()
 
 def print_board_coordinates():
-    board_printer(make_board('123456789'))
+    TerminalDisplay().show_board_state(make_board('123456789'))
 
 def print_outcome(outcome):
     if outcome == GameState.tie:
@@ -61,8 +65,8 @@ try:
         player_x = Player('x', TerminalInput())
         player_o = Player('o', TerminalInput())
 
-        board = Board(callback=board_printer)
-        game = Game(board=board)
+        board = Board()
+        game = Game(board=board, display=TerminalDisplay())
         game.add_player(player_x)
         game.add_player(player_o)
 

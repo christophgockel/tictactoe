@@ -63,10 +63,12 @@ class Rules(object):
 
 
 class Game(object):
-    def __init__(self, board=None):
+    def __init__(self, board=None, display=None):
         self.players = []
         self.rules = Rules()
         self.board = board
+        self.display = display
+
         if self.board is None:
             self.board = Board()
         self.current_player = None
@@ -81,13 +83,19 @@ class Game(object):
 
             while self._is_not_finished():
                 try:
+                    if self.display:
+                        self.display.show_board_state(self.board)
+
                     move = self.current_player.next_move(self.board)
                     self.board[move] = self.current_player.symbol
 
                     self._switch_players()
                 except UnallowedMove:
-                    pass
+                    if self.display:
+                        self.display.show_illegal_move_warning()
 
+            if self.display:
+                self.display.show_board_state(self.board)
             return self._game_state()
         else:
             raise TooFewPlayers()

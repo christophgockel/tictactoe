@@ -93,9 +93,8 @@ class TestGame(unittest.TestCase):
 
         self.assertEqual(GameState.winner_o, game.run())
 
-    def test_players_cannot_place_symbols_on_already_occupied_cells(self):
+    def test_players_are_asked_again_for_next_move_if_cell_is_already_occupied(self):
         rules = Rules()
-        rules.enough_players = Mock(return_value=True)
         rules.finished = Mock(side_effect=[False, False, False, True])
 
         self.player_x.next_move = Mock(side_effect=[1])
@@ -109,6 +108,41 @@ class TestGame(unittest.TestCase):
         game.run()
 
         self.assertEqual(2, self.player_o.next_move.call_count)
+
+    def test_when_cell_is_already_occupied_a_corresponding_message_will_be_presented(self):
+        display = Mock()
+        rules = Rules()
+        rules.finished = Mock(side_effect=[False, False, False, True])
+
+        self.player_x.next_move = Mock(side_effect=[1])
+        self.player_o.next_move = Mock(side_effect=[1,0])
+
+        game = Game(display=display)
+        game.new_rules(rules)
+        game.add_player(self.player_x)
+        game.add_player(self.player_o)
+
+        game.run()
+
+        self.assertEqual(1, display.show_illegal_move_warning.call_count)
+
+    def test_displays_the_board_state_for_every_round_played_and_when_finished(self):
+        display = Mock()
+        rules = Rules()
+        rules.enough_players = Mock(return_value=True)
+        rules.finished = Mock(side_effect=[False, False, True])
+
+        self.player_x.next_move = Mock(side_effect=[1])
+        self.player_o.next_move = Mock(side_effect=[2])
+
+        game = Game(display=display)
+        game.new_rules(rules)
+        game.add_player(self.player_x)
+        game.add_player(self.player_o)
+
+        game.run()
+
+        self.assertEqual(3, display.show_board_state.call_count)
 
 
 class TestRules(unittest.TestCase):

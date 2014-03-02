@@ -82,29 +82,18 @@ class Game(object):
             self.prepare_players()
 
             while self._is_not_finished():
-                try:
-                    if self.display:
-                        self.display.show_board_state(self.board)
+                self._display_board_content()
+                self._place_move_of_current_player()
+                self._switch_players()
 
-                    move = self.current_player.next_move(self.board)
-                    self.board[move] = self.current_player.symbol
+            self._display_board_content()
 
-                    self._switch_players()
-                except UnallowedMove:
-                    if self.display:
-                        self.display.show_illegal_move_warning()
-
-            if self.display:
-                self.display.show_board_state(self.board)
             return self._game_state()
         else:
             raise TooFewPlayers()
 
     def add_player(self, player):
         self.players.append(player)
-
-    def state(self):
-        return board.contents()
 
     def prepare_players(self):
         self.current_player = self.players[0]
@@ -116,11 +105,28 @@ class Game(object):
     def _is_not_finished(self):
         return not self.rules.finished(self.board)
 
+    def _place_move_of_current_player(self):
+        while True:
+            try:
+                move = self.current_player.next_move(self.board)
+                self.board[move] = self.current_player.symbol
+                break
+            except UnallowedMove:
+                self._display_illegal_move_warning()
+
     def _switch_players(self):
         self.current_player, self.other_player = self.other_player, self.current_player
 
     def _game_state(self):
         return self.rules.game_state(self.board)
+
+    def _display_board_content(self):
+        if self.display:
+            self.display.show_board_state(self.board)
+
+    def _display_illegal_move_warning(self):
+        if self.display:
+            self.display.show_illegal_move_warning()
 
 
 class TooFewPlayers(Exception):

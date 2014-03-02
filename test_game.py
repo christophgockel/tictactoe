@@ -95,7 +95,7 @@ class TestGame(unittest.TestCase):
 
     def test_players_are_asked_again_for_next_move_if_cell_is_already_occupied(self):
         rules = Rules()
-        rules.finished = Mock(side_effect=[False, False, False, True])
+        rules.finished = Mock(side_effect=[False, False, True])
 
         self.player_x.next_move = Mock(side_effect=[1])
         self.player_o.next_move = Mock(side_effect=[1,0])
@@ -112,7 +112,7 @@ class TestGame(unittest.TestCase):
     def test_when_cell_is_already_occupied_a_corresponding_message_will_be_presented(self):
         display = Mock()
         rules = Rules()
-        rules.finished = Mock(side_effect=[False, False, False, True])
+        rules.finished = Mock(side_effect=[False, False, True])
 
         self.player_x.next_move = Mock(side_effect=[1])
         self.player_o.next_move = Mock(side_effect=[1,0])

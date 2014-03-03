@@ -63,14 +63,11 @@ class Rules(object):
 
 
 class Game(object):
-    def __init__(self, board=None, display=None):
+    def __init__(self, display=None):
         self.players = []
         self.rules = Rules()
-        self.board = board
+        self.board = Board()
         self.display = display
-
-        if self.board is None:
-            self.board = Board()
         self.current_player = None
         self.other_player = None
 

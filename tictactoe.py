@@ -65,8 +65,7 @@ try:
         player_x = Player('x', TerminalInput())
         player_o = Player('o', TerminalInput())
 
-        board = Board()
-        game = Game(board=board, display=TerminalDisplay())
+        game = Game(display=TerminalDisplay())
         game.add_player(player_x)
         game.add_player(player_o)
 

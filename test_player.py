@@ -1,19 +1,25 @@
 from unittest import TestCase
 from mock import Mock
 
-from player import Player, AutomaticInput
+from player import Player, PlayerO, PlayerX, AutomaticInput
 from board import make_board
 
 class TestPlayer(TestCase):
     def test_player_has_symbol(self):
-        player = Player('o')
+        o = Player(Player.O)
+        x = Player(Player.X)
 
-        self.assertEqual('o', player.symbol)
+        self.assertEqual(Player.O, o.symbol)
+        self.assertEqual(Player.X, x.symbol)
+
+    def test_has_convenience_factory_functions(self):
+        self.assertEqual(Player.O, PlayerO().symbol)
+        self.assertEqual(Player.X, PlayerX().symbol)
 
     def test_can_provide_next_move_with_input_object(self):
         player_input = Mock()
         player_input.next_move = Mock(return_value=2)
-        player = Player('x', player_input)
+        player = PlayerX(player_input)
 
         self.assertEqual(2, player.next_move())
         player_input.next_move.assert_called()
@@ -22,10 +28,10 @@ class TestPlayer(TestCase):
         board = Mock()
         player_input = Mock()
         player_input.next_move = Mock(return_value=2)
-        player = Player('x', player_input)
+        player = PlayerX(player_input)
 
         self.assertEqual(2, player.next_move(board))
-        player_input.next_move.assert_called_with('x', board)
+        player_input.next_move.assert_called_with(player.symbol, board)
 
 
 class TestAutomaticInput(TestCase):

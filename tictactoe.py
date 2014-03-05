@@ -63,7 +63,8 @@ print_introduction()
 try:
     while True:
         player_x = Player('x', TerminalInput())
-        player_o = Player('o', TerminalInput())
+#        player_x = Player('x', AutomaticInput('x'))
+        player_o = Player('o', AutomaticInput('o'))
 
         game = Game(display=TerminalDisplay())
         game.add_player(player_x)

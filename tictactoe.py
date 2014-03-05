@@ -1,6 +1,7 @@
 from game import *
 from board import make_board
 from player import *
+from ai import AutomaticInput
 
 
 class TerminalInput(object):

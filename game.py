@@ -1,4 +1,5 @@
 from board import Board, UnallowedMove
+from player import Player
 
 
 class GameState(object):
@@ -29,10 +30,10 @@ class Rules(object):
             return GameState.ongoing
 
     def _x_has_three_in_a_row(self, board):
-        return self._has_three_in_a_row('x', board)
+        return self._has_three_in_a_row(Player.X, board)
 
     def _o_has_three_in_a_row(self, board):
-        return self._has_three_in_a_row('o', board)
+        return self._has_three_in_a_row(Player.O, board)
 
     def _has_three_in_a_row(self, symbol, board):
         for column in range(3):

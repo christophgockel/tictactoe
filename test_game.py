@@ -117,8 +117,7 @@ class TestRules(unittest.TestCase):
         self.assertTrue(Rules().enough_players([Mock(), Mock()]))
 
     def test_game_is_not_finished_until_all_fields_are_filled(self):
-        board = make_board('oxo xooox')
-        self.assertFalse(Rules().finished(board))
+        self.assertFalse(Rules().finished(make_board('oxo xooox')))
 
     def test_unfinished_game_is_in_state_ongoing(self):
         self.assertEquals(GameState.ongoing, Rules().game_state(make_board('xoxoxoo  ')))

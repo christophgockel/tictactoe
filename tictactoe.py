@@ -27,14 +27,40 @@ class TerminalDisplay(object):
 
             if row < board.row_count() - 1:
                 print '-' * len(row_content)
+        print
 
     def show_illegal_move_warning(self):
         print 'Error: Move not allowed. Please provide another coordinate.'
 
 def print_introduction():
-    print 'Tic Tac Toe'
     print 'Play using the following coordinates:'
     print_board_coordinates()
+
+def ask_for_player():
+    while True:
+        choice = raw_input('Which player do you want to be? (x or o): ')
+
+        if choice.lower() == 'x':
+            human = PlayerX(TerminalInput())
+            computer = PlayerO(AutomaticInput(Player.O))
+            break
+        elif choice.lower() == 'o':
+            human = PlayerO(TerminalInput())
+            computer = PlayerX(AutomaticInput(Player.X))
+            break
+        else:
+            print "Invalid"
+
+    return human, computer
+
+def ask_for_first_turn(human, computer):
+    print 'Who makes the first turn?'
+    choice = raw_input('(No value = you, everything else = computer) ')
+
+    if choice.strip() == '':
+        return human, computer
+    else:
+        return computer, human
 
 def print_board_coordinates():
     TerminalDisplay().show_board_state(make_board('123456789'))
@@ -48,6 +74,7 @@ def print_outcome(outcome):
         print 'Player o is the winner.'
     else:
         print 'Unknown outcome {0}.'.format(outcome)
+    print
 
 def player_is_done():
     print 'Play another round?'
@@ -59,23 +86,21 @@ def player_is_done():
     return False
 
 
-print_introduction()
-
 try:
-    while True:
-        player_x = Player('x', TerminalInput())
-#        player_x = Player('x', AutomaticInput('x'))
-        player_o = Player('o', AutomaticInput('o'))
+    print_introduction()
+    players = ask_for_first_turn(*ask_for_player())
 
+    while True:
         game = Game(display=TerminalDisplay())
-        game.add_player(player_x)
-        game.add_player(player_o)
+        game.add_player(players[0])
+        game.add_player(players[1])
 
         outcome = game.run()
         print_outcome(outcome)
 
         if player_is_done():
             break
+
         print_board_coordinates()
 except KeyboardInterrupt:
     pass

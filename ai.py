@@ -1,4 +1,3 @@
-import sys
 from copy import deepcopy
 from collections import namedtuple
 
@@ -21,7 +20,7 @@ class AutomaticInput(object):
         return self._best_move(board)
 
     def _best_move(self, board):
-        move = self._maximize(board, -sys.maxint - 1, sys.maxint)
+        move = self._maximize(board, -1, 1)
 
         return self._linearize_coordinates(move.coordinates)
 
@@ -89,16 +88,17 @@ class AutomaticInput(object):
         rules = Rules()
 
         state = rules.game_state(board)
+        moves = sum(1 for row in board.rows() for cell in row if cell)
 
         if state == GameState.tie:
             return 0
         elif state == GameState.winner_x:
             if self._symbol == Player.X:
-                return 1
+                return 1.0 / moves
             else:
-                return -1
+                return -1.0 / moves
         else:
             if self._symbol == Player.X:
-                return -1
+                return -1.0 / moves
             else:
-                return 1
+                return 1.0 / moves

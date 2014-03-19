@@ -63,6 +63,10 @@ class Board(object):
     def column_count(self):
         return len(self._grid[0])
 
+    def diagonals(self):
+        for i in range(2):
+            yield self.diagonal(i)
+
 
 class UnallowedMove(Exception):
     pass

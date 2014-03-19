@@ -54,6 +54,15 @@ class TestBoard(unittest.TestCase):
 
         self.assertEqual(7, count)
 
+    def test_diagonals_can_be_iterated(self):
+        board = Board()
+        count = 0
+
+        for diagonal in board.diagonals():
+            count += 1
+
+        self.assertEqual(2, count)
+
     def test_translates_single_key_values_to_proper_indexes(self):
         board = Board()
 

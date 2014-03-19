@@ -36,31 +36,36 @@ class Rules(object):
         return self._has_three_in_a_row(Player.O, board)
 
     def _has_three_in_a_row(self, symbol, board):
-        for column in range(3):
-            if self._column_has_same_values(board, column):
-                if board.column(column)[0] == symbol:
-                    return True
-
-        for row in range(3):
-            if self._row_has_same_values(board, row):
-                if board.row(row)[0] == symbol:
-                    return True
-
-        for diagonal in range(2):
-            if self._diagonal_has_same_values(board, diagonal):
-                if board.diagonal(diagonal)[0] == symbol:
-                    return True
+        if (self._any_column_has_same_values(symbol, board) or
+                self._any_row_has_same_values(symbol, board) or
+                self._any_diagonal_has_same_values(symbol, board)):
+            return True
 
         return False
 
-    def _column_has_same_values(self, board, column):
-        return board.column(column)[1:] == board.column(column)[:-1]
+    def _any_column_has_same_values(self, symbol, board):
+        for column in board.columns():
+            if self._has_same_value(column, symbol):
+                return True
 
-    def _row_has_same_values(self, board, row):
-        return board.row(row)[1:] == board.row(row)[:-1]
+        return False
 
-    def _diagonal_has_same_values(self, board, diagonal):
-        return board.diagonal(diagonal)[1:] == board.diagonal(diagonal)[:-1]
+    def _any_row_has_same_values(self, symbol, board):
+        for row in board.rows():
+            if self._has_same_value(row, symbol):
+                return True
+
+        return False
+
+    def _any_diagonal_has_same_values(self, symbol, board):
+        for diagonal in board.diagonals():
+            if self._has_same_value(diagonal, symbol):
+                return True
+
+        return False
+
+    def _has_same_value(self, values, value):
+        return (values[0] == value) and (values[1:] == values[:-1])
 
 
 class Game(object):

@@ -112,7 +112,7 @@ class Game(object):
         while True:
             try:
                 move = self.current_player.next_move(self.board)
-                self.board[move] = self.current_player.symbol
+                self.board.set(move, self.current_player.symbol)
                 break
             except UnallowedMove:
                 self._display_illegal_move_warning()

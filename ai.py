@@ -1,11 +1,10 @@
-from copy import deepcopy
 from collections import namedtuple
 
 from game import GameState, Rules
 from player import Player
 
 
-RatedMove = namedtuple('Move', 'score coordinates')
+RatedMove = namedtuple('RatedMove', 'score location')
 
 class AutomaticInput(object):
     def next_move(self, symbol, board):
@@ -16,10 +15,7 @@ class AutomaticInput(object):
     def _best_move(self, board):
         move = self._negamax(board, -1, 1, self._symbol)
 
-        return self._linearize_coordinates(move.coordinates)
-
-    def _linearize_coordinates(self, coordinates):
-        return (coordinates[0] * 3) + coordinates[1]
+        return move.location
 
     def _negamax(self, board, alpha, beta, symbol):
         opponent = self._opponent_of(symbol)
@@ -27,13 +23,12 @@ class AutomaticInput(object):
         best_score = -1
 
         if self._board_has_final_state(board):
-            return RatedMove(score=self._score(board, symbol), coordinates=best_move)
+            return RatedMove(score=self._score(board, symbol), location=best_move)
 
-        for move in self.available_moves(board):
-            new_board = deepcopy(board)
-            new_board[move] = symbol
-
-            score = -self._negamax(new_board, -beta, -alpha, opponent).score
+        for move in board.available_locations():
+            board.set(move, symbol)
+            score = -self._negamax(board, -beta, -alpha, opponent).score
+            board.unset(move)
 
             if score > best_score:
                 best_score = score
@@ -45,7 +40,7 @@ class AutomaticInput(object):
             if self._move_is_uninteresting(alpha, beta):
                 break
 
-        return RatedMove(score=best_score, coordinates=best_move)
+        return RatedMove(score=best_score, location=best_move)
 
     def _opponent_of(self, symbol):
         if symbol == Player.X:
@@ -56,15 +51,6 @@ class AutomaticInput(object):
     def _move_is_uninteresting(self, alpha, beta):
         return alpha >= beta
 
-    def available_moves(self, board):
-        moves = []
-
-        for row, row_content in enumerate(board.rows()):
-            cols = [(row, column) for column, cell in enumerate(row_content) if cell is None]
-            moves += cols
-
-        return moves
-
     def _board_has_final_state(self, board):
         rules = Rules()
         return rules.finished(board)
@@ -73,17 +59,17 @@ class AutomaticInput(object):
         rules = Rules()
 
         state = rules.game_state(board)
-        moves = sum(1 for row in board.rows() for cell in row if cell)
+        move_count = sum(1 for row in board.rows() for cell in row if cell)
 
         if state == GameState.tie:
-            return 0
+            return 0.0
         elif state == GameState.winner_x:
             if symbol == Player.X:
-                return 1.0 / moves
+                return 1.0 / move_count
             else:
-                return -1.0 / moves
+                return -1.0 / move_count
         else:
             if symbol == Player.X:
-                return -1.0 / moves
+                return -1.0 / move_count
             else:
-                return 1.0 / moves
+                return 1.0 / move_count

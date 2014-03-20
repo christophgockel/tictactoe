@@ -5,71 +5,56 @@ from game import GameState, Rules
 from player import Player
 
 
-Move = namedtuple('Move', 'score coordinates')
+RatedMove = namedtuple('Move', 'score coordinates')
 
 class AutomaticInput(object):
-    def __init__(self, symbol):
-        self._symbol = symbol
-        
-        if self._symbol == Player.X:
-            self._opponent = Player.O
-        else:
-            self._opponent = Player.X
-
     def next_move(self, symbol, board):
+        self._symbol = symbol
+
         return self._best_move(board)
 
     def _best_move(self, board):
-        move = self._maximize(board, -1, 1)
+        move = self._negamax(board, -1, 1, self._symbol)
 
         return self._linearize_coordinates(move.coordinates)
 
     def _linearize_coordinates(self, coordinates):
         return (coordinates[0] * 3) + coordinates[1]
-    
-    def _maximize(self, board, alpha, beta):
-        moves = self.available_moves(board)
+
+    def _negamax(self, board, alpha, beta, symbol):
+        opponent = self._opponent_of(symbol)
         best_move = (-1, -1)
+        best_score = -1
 
         if self._board_has_final_state(board):
-            return Move(score=self._score(board), coordinates=best_move)
+            return RatedMove(score=self._score(board, symbol), coordinates=best_move)
 
-        for move in moves:
+        for move in self.available_moves(board):
             new_board = deepcopy(board)
-            new_board[move] = self._symbol
+            new_board[move] = symbol
 
-            moved = self._minimize(new_board, alpha, beta)
+            score = -self._negamax(new_board, -beta, -alpha, opponent).score
 
-            if moved.score > alpha:
-                alpha = moved.score
+            if score > best_score:
+                best_score = score
                 best_move = move
 
-            if alpha >= beta:
+            if score > alpha:
+                alpha = score
+
+            if self._move_is_uninteresting(alpha, beta):
                 break
 
-        return Move(score=alpha, coordinates=best_move)
+        return RatedMove(score=best_score, coordinates=best_move)
 
-    def _minimize(self, board, alpha, beta):
-        moves = self.available_moves(board)
-        best_move = (-1, -1)
+    def _opponent_of(self, symbol):
+        if symbol == Player.X:
+            return Player.O
 
-        if self._board_has_final_state(board):
-            return Move(score=self._score(board), coordinates=best_move)
+        return Player.X
 
-        for move in moves:
-            new_board = deepcopy(board)
-            new_board[move] = self._opponent
-
-            moved = self._maximize(new_board, alpha, beta)
-
-            if moved.score < beta:
-                beta = moved.score
-                best_move = move
-
-            if alpha >= beta:
-                break
-
-        return Move(score=beta, coordinates=best_move)
+    def _move_is_uninteresting(self, alpha, beta):
+        return alpha >= beta
 
     def available_moves(self, board):
         moves = []
@@ -84,7 +69,7 @@ class AutomaticInput(object):
         rules = Rules()
         return rules.finished(board)
     
-    def _score(self, board):
+    def _score(self, board, symbol):
         rules = Rules()
 
         state = rules.game_state(board)
@@ -93,12 +78,12 @@ class AutomaticInput(object):
         if state == GameState.tie:
             return 0
         elif state == GameState.winner_x:
-            if self._symbol == Player.X:
+            if symbol == Player.X:
                 return 1.0 / moves
             else:
                 return -1.0 / moves
         else:
-            if self._symbol == Player.X:
+            if symbol == Player.X:
                 return -1.0 / moves
             else:
                 return 1.0 / moves

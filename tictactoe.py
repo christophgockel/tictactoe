@@ -47,9 +47,9 @@ def create_players():
     symbol = get_symbol_for_human_player()
 
     if symbol.lower() == 'x':
-        return Players(human=PlayerX(TerminalInput()), computer=PlayerO(AutomaticInput(Player.O)))
+        return Players(human=PlayerX(TerminalInput()), computer=PlayerO(AutomaticInput()))
     elif symbol.lower() == 'o':
-        return Players(human=PlayerO(TerminalInput()), computer=PlayerX(AutomaticInput(Player.X)))
+        return Players(human=PlayerO(TerminalInput()), computer=PlayerX(AutomaticInput()))
 
 
 def get_symbol_for_human_player():

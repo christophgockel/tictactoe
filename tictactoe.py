@@ -1,7 +1,12 @@
+from collections import namedtuple
+
 from game import *
 from board import make_board
 from player import *
 from ai import AutomaticInput
+
+
+Players = namedtuple('Players', 'human computer')
 
 
 class TerminalInput(object):
@@ -18,9 +23,9 @@ class TerminalInput(object):
            except ValueError:
                print 'Not a valid move. Please try again.'
 
+
 class TerminalDisplay(object):
     def show_board_state(self, board):
-        index = 0
         for row in range(board.row_count()):
             row_content = ' | '.join([' ' if symbol is None else symbol for symbol in board.row(row)])
             print row_content
@@ -32,38 +37,50 @@ class TerminalDisplay(object):
     def show_illegal_move_warning(self):
         print 'Error: Move not allowed. Please provide another coordinate.'
 
+
 def print_introduction():
     print 'Play using the following coordinates:'
     print_board_coordinates()
 
-def ask_for_player():
+
+def create_players():
+    symbol = get_symbol_for_human_player()
+
+    if symbol.lower() == 'x':
+        return Players(human=PlayerX(TerminalInput()), computer=PlayerO(AutomaticInput(Player.O)))
+    elif symbol.lower() == 'o':
+        return Players(human=PlayerO(TerminalInput()), computer=PlayerX(AutomaticInput(Player.X)))
+
+
+def get_symbol_for_human_player():
     while True:
-        choice = raw_input('Which player do you want to be? (x or o): ')
+        choice = raw_input('Which player do you want to be? (x or o): ').lower()
 
-        if choice.lower() == 'x':
-            human = PlayerX(TerminalInput())
-            computer = PlayerO(AutomaticInput(Player.O))
+        if choice == 'x' or choice == 'o':
             break
-        elif choice.lower() == 'o':
-            human = PlayerO(TerminalInput())
-            computer = PlayerX(AutomaticInput(Player.X))
-            break
-        else:
-            print "Invalid"
 
-    return human, computer
+        print 'Invalid choice'
 
-def ask_for_first_turn(human, computer):
-    print 'Who makes the first turn?'
-    choice = raw_input('(No value = you, everything else = computer) ')
+    return choice
 
-    if choice.strip() == '':
-        return human, computer
+
+def sort_for_first_turn(players):
+    choice = get_symbol_for_first_turn()
+
+    if choice == '':
+        return players.human, players.computer
     else:
-        return computer, human
+        return players.computer, players.human
+
+
+def get_symbol_for_first_turn():
+    print 'Who makes the first turn?'
+    return raw_input('(No value = you, everything else = computer) ').strip()
+
 
 def print_board_coordinates():
     TerminalDisplay().show_board_state(make_board('123456789'))
+
 
 def print_outcome(outcome):
     if outcome == GameState.tie:
@@ -75,6 +92,7 @@ def print_outcome(outcome):
     else:
         print 'Unknown outcome {0}.'.format(outcome)
     print
+
 
 def player_is_done():
     print 'Play another round?'
@@ -88,7 +106,7 @@ def player_is_done():
 
 try:
     print_introduction()
-    players = ask_for_first_turn(*ask_for_player())
+    players = sort_for_first_turn(create_players())
 
     while True:
         game = Game(display=TerminalDisplay())

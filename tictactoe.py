@@ -12,27 +12,50 @@ Players = namedtuple('Players', 'human computer')
 class TerminalInput(object):
     def next_move(self, player_symbol, board):
         while True:
-           input = raw_input('Next move for {0}: '.format(player_symbol))
-           try:
-               move = int(input)
+            try:
+                move = self._get_move_for(player_symbol)
 
-               if move >= 1 and move <= 9:
-                   return move - 1
-               else:
-                   print 'Move has to be between 1 and 9. Please try again.'
-           except ValueError:
+                if move >= 1 and move <= 9:
+                    return move - 1
+                else:
+                    print 'Move has to be between 1 and 9. Please try again.'
+            except ValueError:
                print 'Not a valid move. Please try again.'
+
+    def _get_move_for(self, player_symbol):
+        input = raw_input('Next move for {0}: '.format(player_symbol))
+
+        return int(input)
 
 
 class TerminalDisplay(object):
+    def __init__(self, display_indices=False):
+        self._display_indices = display_indices
+
     def show_board_state(self, board):
-        for row in range(board.row_count()):
-            row_content = ' | '.join([' ' if symbol is None else symbol for symbol in board.row(row)])
+        for index, row in enumerate(board.rows()):
+            row_content = self._format_row_content(index, row)
+
             print row_content
 
-            if row < board.row_count() - 1:
+            if index < board.row_count() - 1:
                 print '-' * len(row_content)
+
         print
+
+    def _format_row_content(self, index, row):
+        cells = [self._format_cell(index, row, cell_index) if cell is None else cell
+                 for cell_index, cell in enumerate(row)]
+        formatted_row = '  |  '.join(cells)
+
+        return ' ' + formatted_row + ' '
+
+    def _format_cell(self, row_index, row, cell_index):
+        if self._display_indices:
+            return str(row_index * len(row) + cell_index + 1)
+        else:
+            return ' '
+
 
     def show_illegal_move_warning(self):
         print 'Error: Move not allowed. Please provide another coordinate.'
@@ -43,12 +66,10 @@ def print_introduction():
     print_board_coordinates()
 
 
-def create_players():
-    symbol = get_symbol_for_human_player()
-
-    if symbol.lower() == 'x':
+def create_players(player_symbol):
+    if player_symbol == 'x':
         return Players(human=PlayerX(TerminalInput()), computer=PlayerO(AutomaticInput()))
-    elif symbol.lower() == 'o':
+    elif player_symbol == 'o':
         return Players(human=PlayerO(TerminalInput()), computer=PlayerX(AutomaticInput()))
 
 
@@ -64,10 +85,8 @@ def get_symbol_for_human_player():
     return choice
 
 
-def sort_for_first_turn(players):
-    choice = get_symbol_for_first_turn()
-
-    if choice == '':
+def sort_for_first_turn(order, players):
+    if order == '':
         return players.human, players.computer
     else:
         return players.computer, players.human
@@ -77,6 +96,9 @@ def get_symbol_for_first_turn():
     print 'Who makes the first turn?'
     return raw_input('(No value = you, everything else = computer) ').strip()
 
+def get_indices_option():
+    print 'Would you like having the board indices displayed while playing?'
+    return raw_input('(No value = no, everything else = yes) ').strip()
 
 def print_board_coordinates():
     TerminalDisplay().show_board_state(make_board('123456789'))
@@ -106,10 +128,17 @@ def player_is_done():
 
 try:
     print_introduction()
-    players = sort_for_first_turn(create_players())
+
+    symbol = get_symbol_for_human_player()
+    players = create_players(player_symbol=symbol)
+
+    symbol_for_first_turn = get_symbol_for_first_turn()
+    players = sort_for_first_turn(symbol_for_first_turn, players)
+
+    display_indices = get_indices_option()
 
     while True:
-        game = Game(display=TerminalDisplay())
+        game = Game(display=TerminalDisplay(display_indices))
         game.add_player(players[0])
         game.add_player(players[1])
 
@@ -118,7 +147,5 @@ try:
 
         if player_is_done():
             break
-
-        print_board_coordinates()
 except KeyboardInterrupt:
     pass

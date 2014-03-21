@@ -82,13 +82,8 @@ class Game(object):
 
     def run(self):
         if self._has_enough_players():
-            self.prepare_players()
-
-            while self._is_not_finished():
-                self._display_board_content()
-                self._place_move_of_current_player()
-                self._switch_players()
-
+            self._prepare_players()
+            self._play_game()
             self._display_board_content()
 
             return self._game_state()
@@ -98,9 +93,15 @@ class Game(object):
     def add_player(self, player):
         self.players.append(player)
 
-    def prepare_players(self):
+    def _prepare_players(self):
         self.current_player = self.players[0]
         self.other_player = self.players[1]
+
+    def _play_game(self):
+        while self._is_not_finished():
+            self._display_board_content()
+            self._place_move_of_current_player()
+            self._switch_players()
 
     def _has_enough_players(self):
         return self.rules.enough_players(self.players)
